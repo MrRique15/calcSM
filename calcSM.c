@@ -100,7 +100,6 @@ void main(){
                     break;
                 }
                 if (soma(str1,str2,str3)){
-                    printf("\nResultado MAIN: %s\n", str3);
                     showResult(resp,str3);
                 }
                 break;
