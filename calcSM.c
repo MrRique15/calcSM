@@ -6,7 +6,7 @@
 
 //Mapeamento de erros
 char err[3][255] = {
-    "Numero muito grande\n", 
+    "Numeros com tamanho inválido\n", 
     "Estouro de Bits para o calculo\n", 
     "Opcao Invalida\n"
 };
@@ -26,15 +26,23 @@ void showResult(int code,char result[]){
         "Multiplicacao",
         "Divisao"
     };
-    printf("\n[Resultado %s]: %s\n", opcoes[code-1], result);
+    printf("\n[Resultado %s]: ", opcoes[code-1]);
+    for(int i = 0; i < MAXLENGHT; i++){
+        printf("%c", result[i]);
+    }
+    printf("\n");
     printf("--------------------------------------------------------------------------------\n");
+}
+
+int subtracao(char* x1, char* x2, char* x3){
+    return 1;
 }
 
 int soma(char* x1, char* x2, char* x3){
     int acumulador = 0;
     int x = 0, y = 0;
-    x3[0] = '0';
     for(int i=(strlen(x1)-1); i > 0;i--){
+        printf("Rodando I %d\n", i);
         x = x1[i] - '0';
         y = x2[i] - '0';
         if(x == 1 && y == 1){
@@ -68,7 +76,8 @@ int soma(char* x1, char* x2, char* x3){
         errorShow(1);
         return 0;
     }
-    x3[strlen(x3)-1] = '\0';
+    printf("StrLen x3 %d\n", strlen(x3));
+    // x3[strlen(x3)-1] = '\0';
     return 1;
 }
 
@@ -80,6 +89,31 @@ int coletaOpcao(){
     return resp;
 }
 
+int analisaNumSum(char* x1, char* x2, char* x3){
+    if(x1[0] == '0' && x2[0] == '0'){
+        x3[0] = '0';
+        if(soma(x1,x2,x3)){
+            return 1;
+        }
+        return 0;
+    }else if(x1[0] == '0' && x2[0] == '1'){
+        if(subtracao(x2,x1,x3)){
+            return 1;
+        }
+        return 0;
+    }else if(x1[0] == '1' && x2[0] == '0'){
+        if(subtracao(x2,x1,x3)){
+            return 1;
+        }
+        return 0;
+    }else{
+        x3[0] = '1';
+        if(soma(x1,x2,x3)){
+            return 1;
+        }
+        return 0;
+    }
+}
 void main(){
     char str1[MAXLENGHT];
     char str2[MAXLENGHT];
@@ -95,12 +129,14 @@ void main(){
             case 1:
                 coletaNumero(1,str1);
                 coletaNumero(2,str2);
-                if(strlen(str1)+1 > MAXLENGHT || strlen(str2) > MAXLENGHT){
+                printf("%d\n",strlen(str1));
+                if(strlen(str1) != 16 || strlen(str2) != 16){
                     errorShow(0);
                     break;
                 }
-                if (soma(str1,str2,str3)){
+                if(analisaNumSum(str1,str2,str3)){
                     showResult(resp,str3);
+                    printf("%d\n",strlen(str3));
                 }
                 break;
 
