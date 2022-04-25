@@ -16,6 +16,30 @@ void errorShow(int code){
     printf("\n[---WARNING---]: %s\n", err[code]);
 }
 
+void showBinary(int decimal, int *binary){
+    int i;
+    printf("\n------------------");
+    printf("\nNumero [%d] transformado em binario: ", decimal);
+    for(i = 0; i<MAXLENGHT; i++){
+        printf("%d", binary[i]);
+    }
+    printf("\n------------------");
+}
+void showResult(int code,int *result){
+    char opcoes[4][MAXLENGHT] = {
+        "Soma", 
+        "Subtracao", 
+        "Multiplicacao",
+        "Divisao"
+    };
+    printf("\n[Resultado %s]: ", opcoes[code-1]);
+    for(int i = 0; i < MAXLENGHT; i++){
+        printf("%d", result[i]);
+    }
+    printf("\n");
+    printf("--------------------------------------------------------------------------------\n");
+}
+
 //Funções Operacionais
 int coletaNumero(int num){
     int numero;
@@ -23,6 +47,15 @@ int coletaNumero(int num){
     scanf("%d", &numero);
     return numero;
 }
+
+int coletaOpcao(){
+    int resp = 0;
+    printf("Operacoes Disponiveis:\n\t[0] Sair\n\t[1] Soma\n\t[2] Subtracao\n\t[3] Multiplicacao\n\t[4] Divisao\n");
+    printf("\n\nDigite a operacao que deseja realizar: \n");
+    scanf("%d", &resp);
+    return resp;
+}
+
 void resetaBinarios(int *binario1, int *binario2, int *binario3){
     int i;
     for(i = 0; i < MAXLENGHT; i++){
@@ -72,21 +105,6 @@ int binaryConverter(int decimal, int *binary){
     }
     
     return 1;
-}
-
-void showResult(int code,int *result){
-    char opcoes[4][MAXLENGHT] = {
-        "Soma", 
-        "Subtracao", 
-        "Multiplicacao",
-        "Divisao"
-    };
-    printf("\n[Resultado %s]: ", opcoes[code-1]);
-    for(int i = 0; i < MAXLENGHT; i++){
-        printf("%d", result[i]);
-    }
-    printf("\n");
-    printf("--------------------------------------------------------------------------------\n");
 }
 
 int subtracao(int *binary1, int *binary2, int *result, int inverted){
@@ -198,14 +216,6 @@ int soma(int *binary1, int *binary2, int *result, int inverted){
         return 0;
     }
     return 1;
-}
-
-int coletaOpcao(){
-    int resp = 0;
-    printf("Operacoes Disponiveis:\n\t[0] Sair\n\t[1] Soma\n\t[2] Subtracao\n\t[3] Multiplicacao\n\t[4] Divisao\n");
-    printf("\n\nDigite a operacao que deseja realizar: \n");
-    scanf("%d", &resp);
-    return resp;
 }
 
 int analisaNumSub(int dec1, int dec2, int *bin1, int *bin2, int *bin3){
@@ -327,15 +337,21 @@ void main(){
     resp = coletaOpcao();
     do{
         possibleOperation = 0;
-        resetaBinarios(bin1,bin2,bin3);
         printf("--------------------------------------------------------------------------------\n");
-        num1 = coletaNumero(1);
-        num2 = coletaNumero(2);
-        if (binaryConverter(num1, bin1)){
-            if(binaryConverter(num2, bin2)){
-                possibleOperation = 1;
+        resetaBinarios(bin1,bin2,bin3);
+
+        if(resp != 0){
+            num1 = coletaNumero(1);
+            num2 = coletaNumero(2);
+            if (binaryConverter(num1, bin1)){
+                if(binaryConverter(num2, bin2)){
+                    possibleOperation = 1;
+                }
             }
+            showBinary(num1, bin1);
+            showBinary(num2, bin2);
         }
+
         switch(resp){
             case 0:
                 break;
