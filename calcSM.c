@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXLENGHT 17    //16 bits para o numero, 1 bit para o '\0'
+#define MAXLENGHT 16    //16 bits para o numero, 1 bit para o '\0'
+#define MAXNUM 32767    //2^15 - 1
+#define MINNUM -32767   //-(2^15 - 1)
 
 //Mapeamento de erros
 char err[3][255] = {
-    "Numeros com tamanho inválido\n", 
+    "Um numero decimal excede a quantidade de bits suportada quando transformado em binario\n", 
     "Estouro de Bits para o calculo\n", 
     "Opcao Invalida\n"
 };
@@ -14,12 +16,57 @@ void errorShow(int code){
     printf("\n[---WARNING---]: %s\n", err[code]);
 }
 
-void coletaNumero(int num, const char* numero){
+//Funções Operacionais
+int coletaNumero(int num){
+    int numero;
     printf("Insira o numero %d: ", num);
-    scanf("%s", numero);
+    scanf("%d", &numero);
+    return numero;
 }
 
-void showResult(int code,char result[]){
+int binaryConverter(int decimal, int *binary){
+    int i = 0, j = 1;
+    int num[MAXLENGHT];
+
+    //Verificação do numero decimal, se for maior que o numero de bits suportado, retorna erro
+    if(decimal > MAXNUM || decimal < MINNUM){
+        errorShow(0);
+        return 0;
+    }
+
+    //Verificação do sinal do numero decimal
+    if(decimal > 0){
+        num[0] = 0;
+    }else{
+        num[0] = 1;
+        decimal = -decimal;
+    }
+
+    //Preparaçao do numero binario final
+    for(int w = 1; w < MAXLENGHT; w++){
+        num[w] = 0;
+    }
+    
+    //Conversao Binaria
+    while(decimal > 0){
+        binary[i] = decimal % 2;
+        decimal = decimal / 2;
+        i++;
+    }
+    j = MAXLENGHT-i;
+    for(i=i-1;i>=0;i--,j++){
+        num[j] = binary[i];   
+    }
+
+    //Reorganização do numero binario final
+    for(i = 0; i < MAXLENGHT; i++){
+        binary[i] = num[i];
+    }
+    
+    return 1;
+}
+
+void showResult(int code,int *result){
     char opcoes[4][MAXLENGHT] = {
         "Soma", 
         "Subtracao", 
@@ -28,7 +75,7 @@ void showResult(int code,char result[]){
     };
     printf("\n[Resultado %s]: ", opcoes[code-1]);
     for(int i = 0; i < MAXLENGHT; i++){
-        printf("%c", result[i]);
+        printf("%d", result[i]);
     }
     printf("\n");
     printf("--------------------------------------------------------------------------------\n");
@@ -115,29 +162,38 @@ int analisaNumSum(char* x1, char* x2, char* x3){
     }
 }
 void main(){
-    char str1[MAXLENGHT];
-    char str2[MAXLENGHT];
-    char str3[MAXLENGHT];
+    int num1, num2;
+    int bin1[MAXLENGHT], bin2[MAXLENGHT], bin3[MAXLENGHT];
     int resp = 0;
+    int possibleOperation = 0;
     resp = coletaOpcao();
     do{
+        possibleOperation = 0;
         printf("--------------------------------------------------------------------------------\n");
         switch(resp){
             case 0:
                 break;
 
             case 1:
-                coletaNumero(1,str1);
-                coletaNumero(2,str2);
-                printf("%d\n",strlen(str1));
-                if(strlen(str1) != 16 || strlen(str2) != 16){
-                    errorShow(0);
-                    break;
+                num1 = coletaNumero(1);
+                num2 = coletaNumero(2);
+                if (binaryConverter(num1, bin1)){
+                    if(binaryConverter(num2, bin2)){
+                        possibleOperation = 1;
+                    }
                 }
-                if(analisaNumSum(str1,str2,str3)){
-                    showResult(resp,str3);
-                    printf("%d\n",strlen(str3));
+                if(possibleOperation){
+                   printf("\nBINARY FINAL is: %d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d\n",bin1[0],bin1[1],bin1[2],bin1[3],bin1[4],bin1[5],bin1[6],bin1[7],bin1[8],bin1[9],bin1[10],bin1[11],bin1[12],bin1[13],bin1[14],bin1[15]);
                 }
+                // printf("%d\n",strlen(str1));
+                // if(strlen(str1) != 16 || strlen(str2) != 16){
+                //     errorShow(0);
+                //     break;
+                // }
+                // if(analisaNumSum(str1,str2,str3)){
+                //     showResult(resp,str3);
+                //     printf("%d\n",strlen(str3));
+                // }
                 break;
 
             case 2:
