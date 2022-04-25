@@ -16,6 +16,23 @@ void errorShow(int code){
     printf("\n[---WARNING---]: %s\n", err[code]);
 }
 
+void showOperation(char identificador, int *binary, int start, int end){
+    int i;
+
+    if(identificador != 'R' && identificador != 'F'){
+        printf("\nBinario %c:   ", identificador);
+    }else if(identificador == 'F'){
+        printf("\n-------------------------------------------");
+        printf("\nBinario %c:     ", identificador);
+    }else{
+        printf("\n\n\n-------------------------------------------");
+        printf("\nBinario %c: ", identificador);
+    }
+
+    for(i = start; i < end; i++){
+        printf("%d ", binary[i]);
+    }
+}
 void showBinary(int decimal, int *binary){
     int i;
     printf("\n------------------");
@@ -114,23 +131,23 @@ int subtracao(int *binary1, int *binary2, int *result, int inverted){
         if(inverted == 1){
             printf("\n\n------------------");
             printf("\nSomando os binarios no bit: [%d]", i);
-            printf("\nBinario1: %d", binary1[i]);
-            printf("\nBinario2: %d", binary2[i]);
+            showOperation('1', binary1, i, MAXLENGHT);
+            showOperation('2', binary2, i, MAXLENGHT);
         }else if(inverted == 2){
             printf("\n\n------------------");
             printf("\nSomando os binarios no bit: [%d]", i);
-            printf("\nBinario1: %d", binary2[i]);
-            printf("\nBinario2: %d", binary1[i]);
+            showOperation('1', binary2, i, MAXLENGHT);
+            showOperation('2', binary1, i, MAXLENGHT);
         }else if(inverted == 3){
             printf("\n\n------------------");
             printf("\nSubtraindo os binarios no bit: [%d]", i);
-            printf("\nBinario1: %d", binary2[i]);
-            printf("\nBinario2: %d", binary1[i]);
+            showOperation('1', binary2, i, MAXLENGHT);
+            showOperation('2', binary1, i, MAXLENGHT);
         }else{
             printf("\n\n------------------");
             printf("\nSubtraindo os binarios no bit: [%d]", i);
-            printf("\nBinario1: %d", binary1[i]);
-            printf("\nBinario2: %d", binary2[i]);
+            showOperation('1', binary1, i, MAXLENGHT);
+            showOperation('2', binary2, i, MAXLENGHT);
         }
         x = binary1[i];
         y = binary2[i];
@@ -152,6 +169,7 @@ int subtracao(int *binary1, int *binary2, int *result, int inverted){
                 emprestimo = 0;
             }
         }
+        showOperation('F', result, i+1, MAXLENGHT);
     }
 
     if(emprestimo == 1){
@@ -169,18 +187,18 @@ int soma(int *binary1, int *binary2, int *result, int inverted){
         if(inverted == 1){
             printf("\n\n------------------");
             printf("\nSubtraindo os binarios no bit: [%d]", i);
-            printf("\nBinario1: %d", binary1[i]);
-            printf("\nBinario2: %d", binary2[i]);
+            showOperation('1', binary1, i, MAXLENGHT);
+            showOperation('2', binary2, i, MAXLENGHT);
         }else if(inverted == 2){
             printf("\n\n------------------");
             printf("\nSubtraindo os binarios no bit: [%d]", i);
-            printf("\nBinario1: %d", binary2[i]);
-            printf("\nBinario2: %d", binary1[i]);
+            showOperation('1', binary2, i, MAXLENGHT);
+            showOperation('2', binary1, i, MAXLENGHT);
         }else{
             printf("\n\n------------------");
             printf("\nSomando os binarios no bit: [%d]", i);
-            printf("\nBinario1: %d", binary1[i]);
-            printf("\nBinario2: %d", binary2[i]);
+            showOperation('1', binary1, i, MAXLENGHT);
+            showOperation('2', binary2, i, MAXLENGHT);
         }
         x = binary1[i];
         y = binary2[i];
@@ -209,6 +227,7 @@ int soma(int *binary1, int *binary2, int *result, int inverted){
                 acumulador = 0;
             }
         }
+        showOperation('F', result, i+1, MAXLENGHT);
     }
 
     if(acumulador == 1){
@@ -358,6 +377,8 @@ void main(){
             case 1:
                 if(possibleOperation){
                     if(analisaNumSum(num1, num2, bin1, bin2, bin3)){
+                        showOperation('R', bin3, 0, MAXLENGHT);
+                        printf("\n--------------------------------------------------------------------------------");
                         showResult(resp, bin3);
                     }
                 }
@@ -366,6 +387,8 @@ void main(){
             case 2:
                 if(possibleOperation){
                     if(analisaNumSub(num1, num2, bin1, bin2, bin3)){
+                        showOperation('R', bin3, 0, MAXLENGHT);
+                        printf("\n--------------------------------------------------------------------------------");
                         showResult(resp, bin3);
                     }
                 }
