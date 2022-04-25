@@ -23,6 +23,14 @@ int coletaNumero(int num){
     scanf("%d", &numero);
     return numero;
 }
+void resetaBinarios(int *binario1, int *binario2, int *binario3){
+    int i;
+    for(i = 0; i < MAXLENGHT; i++){
+        binario1[i] = 0;
+        binario2[i] = 0;
+        binario3[i] = 0;
+    }
+}
 
 int binaryConverter(int decimal, int *binary){
     int i = 0, j = 1;
@@ -81,39 +89,105 @@ void showResult(int code,int *result){
     printf("--------------------------------------------------------------------------------\n");
 }
 
-int subtracao(char* x1, char* x2, char* x3){
+int subtracao(int *binary1, int *binary2, int *result, int inverted){
+    int emprestimo = 0;
+    int x = 0, y = 0;
+    for(int i=(MAXLENGHT-1); i > 0; i--){
+        if(inverted == 1){
+            printf("\n\n------------------");
+            printf("\nSomando os binarios no bit: [%d]", i);
+            printf("\nBinario1: %d", binary1[i]);
+            printf("\nBinario2: %d", binary2[i]);
+        }else if(inverted == 2){
+            printf("\n\n------------------");
+            printf("\nSomando os binarios no bit: [%d]", i);
+            printf("\nBinario1: %d", binary2[i]);
+            printf("\nBinario2: %d", binary1[i]);
+        }else if(inverted == 3){
+            printf("\n\n------------------");
+            printf("\nSubtraindo os binarios no bit: [%d]", i);
+            printf("\nBinario1: %d", binary2[i]);
+            printf("\nBinario2: %d", binary1[i]);
+        }else{
+            printf("\n\n------------------");
+            printf("\nSubtraindo os binarios no bit: [%d]", i);
+            printf("\nBinario1: %d", binary1[i]);
+            printf("\nBinario2: %d", binary2[i]);
+        }
+        x = binary1[i];
+        y = binary2[i];
+        if(x == 1 && y == 1){
+            result[i] = 0;
+            emprestimo = 0;
+        }else if(x == 1 && y == 0){
+            result[i] = 1;
+            emprestimo = 0;
+        }else if(x == 0 && y == 1){
+            result[i] = 1;
+            emprestimo = 1;
+        }else{
+            result[i] = 0;
+        }
+        if(emprestimo == 1){
+            if(i > 1){
+                binary1[i-1] = 0;
+                emprestimo = 0;
+            }
+        }
+    }
+
+    if(emprestimo == 1){
+        errorShow(1);
+        return 0;
+    }
     return 1;
 }
 
-int soma(char* x1, char* x2, char* x3){
+int soma(int *binary1, int *binary2, int *result, int inverted){
     int acumulador = 0;
     int x = 0, y = 0;
-    for(int i=(strlen(x1)-1); i > 0;i--){
-        printf("Rodando I %d\n", i);
-        x = x1[i] - '0';
-        y = x2[i] - '0';
+
+    for(int i=(MAXLENGHT-1); i > 0; i--){
+        if(inverted == 1){
+            printf("\n\n------------------");
+            printf("\nSubtraindo os binarios no bit: [%d]", i);
+            printf("\nBinario1: %d", binary1[i]);
+            printf("\nBinario2: %d", binary2[i]);
+        }else if(inverted == 2){
+            printf("\n\n------------------");
+            printf("\nSubtraindo os binarios no bit: [%d]", i);
+            printf("\nBinario1: %d", binary2[i]);
+            printf("\nBinario2: %d", binary1[i]);
+        }else{
+            printf("\n\n------------------");
+            printf("\nSomando os binarios no bit: [%d]", i);
+            printf("\nBinario1: %d", binary1[i]);
+            printf("\nBinario2: %d", binary2[i]);
+        }
+        x = binary1[i];
+        y = binary2[i];
         if(x == 1 && y == 1){
             if(acumulador == 0){ 
-                x3[i] = '0';
+                result[i] = 0;
                 acumulador = 1;
             }else{
-                x3[i] = '1';
+                result[i] = 1;
                 acumulador = 1;
             }
         }else if(x == 1 || y == 1){
             if(acumulador == 0){
-                x3[i] = '1';
+                result[i] = 1;
                 acumulador = 0;
             }else{
-                x3[i] = '0';
+                result[i] = 0;
                 acumulador = 1;
             }
         }else{
             if(acumulador == 0){
-                x3[i] = '0';
+                result[i] = 0;
                 acumulador = 0;
             }else{
-                x3[i] = '1';
+                result[i] = 1;
                 acumulador = 0;
             }
         }
@@ -123,8 +197,6 @@ int soma(char* x1, char* x2, char* x3){
         errorShow(1);
         return 0;
     }
-    printf("StrLen x3 %d\n", strlen(x3));
-    // x3[strlen(x3)-1] = '\0';
     return 1;
 }
 
@@ -136,26 +208,112 @@ int coletaOpcao(){
     return resp;
 }
 
-int analisaNumSum(char* x1, char* x2, char* x3){
-    if(x1[0] == '0' && x2[0] == '0'){
-        x3[0] = '0';
-        if(soma(x1,x2,x3)){
+int analisaNumSub(int dec1, int dec2, int *bin1, int *bin2, int *bin3){
+    if(bin1[0] == 0 && bin2[0] == 0){
+        if(abs(dec1) == abs(dec2)){
+            bin3[0] = 0;
+            if(subtracao(bin1, bin2, bin3, 0)){
+                return 1;
+            }
+            return 0;
+        }else if(dec1 < -dec2){
+            bin3[0] = 1;
+            if(subtracao(bin2, bin1, bin3, 3)){
+                return 1;
+            }
+            return 0;
+        }else{
+            bin3[0] = 1;
+            if(subtracao(bin1, bin2, bin3, 2)){
+                return 1;
+            }
+            return 0;
+        }
+    }else if(bin1[1] == 1 && bin2[0] == 0){
+        bin3[0] = 1;
+        if(soma(bin1, bin2, bin3, 1)){
             return 1;
         }
         return 0;
-    }else if(x1[0] == '0' && x2[0] == '1'){
-        if(subtracao(x2,x1,x3)){
+    }else if(bin1[0] == 0 && bin2[1] == 1){
+        bin3[0] = 0;
+        if(soma(bin2, bin1, bin3, 1)){
             return 1;
         }
         return 0;
-    }else if(x1[0] == '1' && x2[0] == '0'){
-        if(subtracao(x2,x1,x3)){
+    }else if(bin1[0] == 1 && bin2[0] == 1){
+        if(abs(dec1) == abs(dec2)){
+            bin3[0] = 0;
+            if(subtracao(bin1, bin2, bin3, 0)){
+                return 1;
+            }
+            return 0;
+        }else if(-dec1 < -dec2){
+            bin3[0] = 0;
+            if(subtracao(bin2, bin1, bin3, 3)){
+                return 1;
+            }
+            return 0;
+        }else if(-dec1 > -dec2){
+            bin3[0] = 1;
+            if(subtracao(bin1, bin2, bin3, 2)){
+                return 1;
+            }
+            return 0;
+        }
+    }else{
+        if(abs(dec1) == abs(dec2)){
+            bin3[0] = 0;
+            if(subtracao(bin1, bin2, bin3, 0)){
+                return 1;
+            }
+            return 0;
+        }else{
+            bin3[0] = 1;
+            if(soma(bin1, bin2, bin3, 1)){
+                return 1;
+            }
+            return 0;
+        }
+    }
+}
+
+int analisaNumSum(int dec1, int dec2, int *bin1, int *bin2, int *bin3){
+    if(bin1[0] == 0 && bin2[0] == 0){
+        bin3[0] = 0;
+        if(soma(bin1,bin2,bin3,0)){
             return 1;
+        }
+        return 0;
+    }else if(bin1[0] == 0 && bin2[0] == 1){
+        if(dec1 > -dec2){
+            bin3[0] = 0;
+            if(subtracao(bin1,bin2,bin3,1)){
+                return 1;
+            }
+        }else{
+            bin3[0] = 1;
+            if(subtracao(bin2,bin1,bin3,2)){
+                return 1;
+            }
+        }
+        return 0;
+    }else if(bin1[0] == 1 && bin2[0] == 0){
+        if(-dec1 > dec2){
+            bin3[0] = 1;
+            if(subtracao(bin1,bin2,bin3,1)){
+                return 1;
+            }
+        }else{
+            bin3[0] = 0;
+            if(subtracao(bin2,bin1,bin3,2)){
+                return 1;
+            }
         }
         return 0;
     }else{
-        x3[0] = '1';
-        if(soma(x1,x2,x3)){
+        bin3[0] = 1;
+        if(soma(bin1,bin2,bin3,0)){
             return 1;
         }
         return 0;
@@ -169,34 +327,32 @@ void main(){
     resp = coletaOpcao();
     do{
         possibleOperation = 0;
+        resetaBinarios(bin1,bin2,bin3);
         printf("--------------------------------------------------------------------------------\n");
+        num1 = coletaNumero(1);
+        num2 = coletaNumero(2);
+        if (binaryConverter(num1, bin1)){
+            if(binaryConverter(num2, bin2)){
+                possibleOperation = 1;
+            }
+        }
         switch(resp){
             case 0:
                 break;
-
             case 1:
-                num1 = coletaNumero(1);
-                num2 = coletaNumero(2);
-                if (binaryConverter(num1, bin1)){
-                    if(binaryConverter(num2, bin2)){
-                        possibleOperation = 1;
+                if(possibleOperation){
+                    if(analisaNumSum(num1, num2, bin1, bin2, bin3)){
+                        showResult(resp, bin3);
                     }
                 }
-                if(possibleOperation){
-                   printf("\nBINARY FINAL is: %d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d\n",bin1[0],bin1[1],bin1[2],bin1[3],bin1[4],bin1[5],bin1[6],bin1[7],bin1[8],bin1[9],bin1[10],bin1[11],bin1[12],bin1[13],bin1[14],bin1[15]);
-                }
-                // printf("%d\n",strlen(str1));
-                // if(strlen(str1) != 16 || strlen(str2) != 16){
-                //     errorShow(0);
-                //     break;
-                // }
-                // if(analisaNumSum(str1,str2,str3)){
-                //     showResult(resp,str3);
-                //     printf("%d\n",strlen(str3));
-                // }
                 break;
 
             case 2:
+                if(possibleOperation){
+                    if(analisaNumSub(num1, num2, bin1, bin2, bin3)){
+                        showResult(resp, bin3);
+                    }
+                }
                 break;
 
             case 3:
