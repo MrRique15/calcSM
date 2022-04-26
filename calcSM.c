@@ -5,11 +5,13 @@
 #define MAXLENGHT 16    //16 bits para o numero, 1 bit para o '\0'
 #define MAXNUM 32767    //2^15 - 1
 #define MINNUM -32767   //-(2^15 - 1)
+#define FALSE 0;
+#define TRUE 1;
 
 //Mapeamento de erros
 char err[3][255] = {
     "Um numero decimal excede a quantidade de bits suportada quando transformado em binario\n", 
-    "Estouro de Bits para o calculo\n", 
+    "Estouro de Bits para o calculo\n",
     "Opcao Invalida\n"
 };
 void errorShow(int code){
@@ -56,6 +58,12 @@ void showResult(int code,int *result){
     printf("\n");
     printf("--------------------------------------------------------------------------------\n");
 }
+void printBinaryMult(int *binary, int length){
+    int i;
+    for(i = 0; i < length; i++){
+        printf("%d", binary[i]);
+    }
+}
 
 //Funções Operacionais
 int coletaNumero(int num){
@@ -67,7 +75,7 @@ int coletaNumero(int num){
 
 int coletaOpcao(){
     int resp = 0;
-    printf("Operacoes Disponiveis:\n\t[0] Sair\n\t[1] Soma\n\t[2] Subtracao\n\t[3] Multiplicacao\n\t[4] Divisao\n");
+    printf("Operacoes Disponiveis:\n\t[0] Sair\n\t[1] Soma\n\t[2] Subtracao\n\t[3] Multiplicacao\n");
     printf("\n\nDigite a operacao que deseja realizar: \n");
     scanf("%d", &resp);
     return resp;
@@ -237,6 +245,150 @@ int soma(int *binary1, int *binary2, int *result, int inverted){
     return 1;
 }
 
+int somaMult(int *A, int *M){
+    int x, y;
+    int acumulador = 0;
+    int result[MAXLENGHT-1];
+    for(int i=(MAXLENGHT-2); i >= 0; i--){
+        x = A[i];
+        y = M[i];
+        if(x == 1 && y == 1){
+            if(acumulador == 0){ 
+                result[i] = 0;
+                acumulador = 1;
+            }else{
+                result[i] = 1;
+                acumulador = 1;
+            }
+        }else if(x == 1 || y == 1){
+            if(acumulador == 0){
+                result[i] = 1;
+                acumulador = 0;
+            }else{
+                result[i] = 0;
+                acumulador = 1;
+            }
+        }else{
+            if(acumulador == 0){
+                result[i] = 0;
+                acumulador = 0;
+            }else{
+                result[i] = 1;
+                acumulador = 0;
+            }
+        }
+    }
+
+    for(int k = 0; k < MAXLENGHT-1; k++){
+        A[k] = result[k];
+    }
+
+    return acumulador;
+}
+
+int deslocarDireita(int C, int *A, int *Q){
+    for(int i=(MAXLENGHT-2); i >= 0; i--){
+        if(i == 0){
+           Q[i] = A[MAXLENGHT-2];
+        }else{
+            Q[i] = Q[i-1];
+        }
+    }
+    for(int h=(MAXLENGHT-2); h >= 0; h--){
+        if(h == 0){
+            A[h] = C;
+        }else{
+            A[h] = A[h-1];
+        }
+    }
+    return 0;
+}
+
+int analisaNumMult(int dec1, int dec2, int *bin1, int *bin2){
+    int signal = 0;
+    int C = 0, A[MAXLENGHT-1],  Q[MAXLENGHT-1], M[MAXLENGHT-1], contador = 0;
+    int sum = FALSE;
+
+    for(int i = 0; i < MAXLENGHT-1; i++){
+        A[i] = 0;
+    }
+
+    for(int j = 0; j < MAXLENGHT-1; j++){
+        Q[j] = bin1[j+1];
+        M[j] = bin2[j+1];
+    }
+
+    if(bin1[0] == 1 && bin2[0] == 1){
+        signal = 0;
+    }else if(bin1[0] == 1 || bin2[0] == 1){
+        signal = 1;
+    }else{
+        signal = 0;
+    }
+
+    printf("\n\n------------------------------------");
+    printf("\n--[VALORES INICIAIS]--", contador);
+    printf("\n[C]: %d", C);
+    printf("\n[A]: ");
+    printBinaryMult(A, MAXLENGHT-1);
+    printf("\n[Q]: ");
+    printBinaryMult(Q, MAXLENGHT-1);
+    printf("\n[M]: ");
+    printBinaryMult(M, MAXLENGHT-1);
+    printf("\n------------------------------------");
+
+    while(contador < MAXLENGHT-1){
+        sum = FALSE;
+        if(Q[MAXLENGHT-2] == 1){
+            printf("\n-----[Ciclo %d | A = (A+M)]-----", contador+1);
+            // printf("\n(");
+            // printBinaryMult(A, MAXLENGHT-1);
+            // printf(" + ");
+            // printBinaryMult(M, MAXLENGHT-1);
+            // printf(") = ");
+            C = somaMult(A, M);
+            sum = TRUE;
+        }
+        if(sum){
+            // printBinaryMult(A, MAXLENGHT-1);
+            printf("\n-----[A = A + M]-----");
+            printf("\n[C]: %d", C);
+            printf("\n[A]: ");
+            printBinaryMult(A, MAXLENGHT-1);
+            printf("\n[Q]: ");
+            printBinaryMult(Q, MAXLENGHT-1);
+            printf("\n[M]: ");
+            printBinaryMult(M, MAXLENGHT-1);
+        }else{
+            printf("\n-----[Ciclo %d]-----", contador+1);
+        }
+        C = deslocarDireita(C, A, Q);
+        printf("\n-----[ DESLOCA ]-----");
+        printf("\n[C]: %d", C);
+        printf("\n[A]: ");
+        printBinaryMult(A, MAXLENGHT-1);
+        printf("\n[Q]: ");
+        printBinaryMult(Q, MAXLENGHT-1);
+        printf("\n[M]: ");
+        printBinaryMult(M, MAXLENGHT-1);
+        printf("\n---------------------");
+        contador++;
+        printf("\n------------------------------------");
+    }
+
+    //Mostrar Resultado:
+    printf("\n------------------------------------");
+    printf("\nResultado da Multiplicacao: ");
+    printf("\n[%d", signal);
+    for(int i = 0; i < MAXLENGHT-1; i++){
+        printf("%d", A[i]);
+    }
+    for(int i = 0; i < MAXLENGHT-1; i++){
+        printf("%d", Q[i]);
+    }
+    printf("]\n------------------------------------\n");
+}
+
 int analisaNumSub(int dec1, int dec2, int *bin1, int *bin2, int *bin3){
     if(bin1[0] == 0 && bin2[0] == 0){
         if(abs(dec1) == abs(dec2)){
@@ -395,9 +547,9 @@ void main(){
                 break;
 
             case 3:
-                break;
-
-            case 4:
+                if(possibleOperation){
+                    analisaNumMult(num1, num2, bin1, bin2);
+                }
                 break;
 
             default: 
@@ -407,5 +559,6 @@ void main(){
         resp = coletaOpcao();
         system("cls");
     }while(resp != 0);
+
     printf("Finalizando Calculadora Sinal Magnitude...\n");
 }
