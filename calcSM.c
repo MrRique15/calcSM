@@ -1,14 +1,25 @@
+/*
+Autor: Henrique Ribeiro Favaro
+RA: 115.408
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#define MAXLENGHT 16    //16 bits para o numero, 1 bit para o '\0'
+//---------------------------- CABEÇALHO ---------------------------------------//
+#define MAXLENGHT 16    // 16 bits para o numero, 1 bit para o '\0'
 #define MAXNUM 32767    //2^15 - 1
 #define MINNUM -32767   //-(2^15 - 1)
 #define FALSE 0;
 #define TRUE 1;
+//-------------------------------------------------------------------------------//
 
-//Mapeamento de erros
+
+//---------------------------- FUNÇÕES DEMONSTRATIVAS ---------------------------------------//
+/*
+Função que apresenta um erro conforme o código fornecido.
+*/
 char err[3][255] = {
     "Um numero decimal excede a quantidade de bits suportada quando transformado em binario\n", 
     "Estouro de Bits para o calculo\n",
@@ -18,6 +29,10 @@ void errorShow(int code){
     printf("\n[---WARNING---]: %s\n", err[code]);
 }
 
+/*
+Função para apresentar uma operação no console, durane a execução dos cálculos, possibilitando
+uma demonstração passo a passo para o usuário.
+*/
 void showOperation(char identificador, int *binary, int start, int end){
     int i;
 
@@ -35,6 +50,10 @@ void showOperation(char identificador, int *binary, int start, int end){
         printf("%d ", binary[i]);
     }
 }
+
+/*
+Função para mostrar um numero binário representado em decimal.
+*/
 void showBinary(int decimal, int *binary){
     int i;
     printf("\n------------------");
@@ -44,12 +63,14 @@ void showBinary(int decimal, int *binary){
     }
     printf("\n------------------");
 }
+
+/*
+Função que apresenta o resultado da soma e da subtração.
+*/
 void showResult(int code,int *result){
     char opcoes[4][MAXLENGHT] = {
         "Soma", 
         "Subtracao", 
-        "Multiplicacao",
-        "Divisao"
     };
     printf("\n[Resultado %s]: ", opcoes[code-1]);
     for(int i = 0; i < MAXLENGHT; i++){
@@ -58,6 +79,10 @@ void showResult(int code,int *result){
     printf("\n");
     printf("--------------------------------------------------------------------------------\n");
 }
+
+/*
+Função que auxilia na multiplicação, ao apresentar o binário em partes, durane sua operação bit a bit.
+*/
 void printBinaryMult(int *binary, int length){
     int i;
     for(i = 0; i < length; i++){
@@ -65,7 +90,10 @@ void printBinaryMult(int *binary, int length){
     }
 }
 
-//Funções Operacionais
+//---------------------------- FUNÇÕES OPERACIONAIS ---------------------------------------//
+/*
+Função para a coleta de um numero decimal.
+*/
 int coletaNumero(int num){
     int numero;
     printf("Insira o numero %d: ", num);
@@ -73,6 +101,9 @@ int coletaNumero(int num){
     return numero;
 }
 
+/*
+Funcao para a coleta da opção desejada pelo usuario.
+*/
 int coletaOpcao(){
     int resp = 0;
     printf("Operacoes Disponiveis:\n\t[0] Sair\n\t[1] Soma\n\t[2] Subtracao\n\t[3] Multiplicacao\n");
@@ -81,6 +112,9 @@ int coletaOpcao(){
     return resp;
 }
 
+/*
+Funcao para resetar um numero binario, deixando seus bits todos como 0.
+*/
 void resetaBinarios(int *binario1, int *binario2, int *binario3){
     int i;
     for(i = 0; i < MAXLENGHT; i++){
@@ -90,6 +124,9 @@ void resetaBinarios(int *binario1, int *binario2, int *binario3){
     }
 }
 
+/*
+Funcao para converter um numero decimal em um numero binario.
+*/
 int binaryConverter(int decimal, int *binary){
     int i = 0, j = 1;
     int num[MAXLENGHT];
@@ -132,9 +169,14 @@ int binaryConverter(int decimal, int *binary){
     return 1;
 }
 
+/*
+Funcao que realiza a subtracao dos numeros binarios, operando seu sinal e apresentado cada etapa
+realizada durante os calculos.
+*/
 int subtracao(int *binary1, int *binary2, int *result, int inverted){
     int emprestimo = 0;
     int x = 0, y = 0;
+
     for(int i=(MAXLENGHT-1); i > 0; i--){
         if(inverted == 1){
             printf("\n\n------------------");
@@ -157,8 +199,10 @@ int subtracao(int *binary1, int *binary2, int *result, int inverted){
             showOperation('1', binary1, i, MAXLENGHT);
             showOperation('2', binary2, i, MAXLENGHT);
         }
+
         x = binary1[i];
         y = binary2[i];
+
         if(x == 1 && y == 1){
             result[i] = 0;
             emprestimo = 0;
@@ -171,6 +215,7 @@ int subtracao(int *binary1, int *binary2, int *result, int inverted){
         }else{
             result[i] = 0;
         }
+
         if(emprestimo == 1){
             if(i > 1){
                 binary1[i-1] = 0;
@@ -184,9 +229,14 @@ int subtracao(int *binary1, int *binary2, int *result, int inverted){
         errorShow(1);
         return 0;
     }
+
     return 1;
 }
 
+/*
+Funcao que realiza a soma dos numeros binarios, operando seu sinal e apresentado cada etapa
+realizada durante os calculos.
+*/
 int soma(int *binary1, int *binary2, int *result, int inverted){
     int acumulador = 0;
     int x = 0, y = 0;
@@ -208,8 +258,10 @@ int soma(int *binary1, int *binary2, int *result, int inverted){
             showOperation('1', binary1, i, MAXLENGHT);
             showOperation('2', binary2, i, MAXLENGHT);
         }
+
         x = binary1[i];
         y = binary2[i];
+
         if(x == 1 && y == 1){
             if(acumulador == 0){ 
                 result[i] = 0;
@@ -242,9 +294,14 @@ int soma(int *binary1, int *binary2, int *result, int inverted){
         errorShow(1);
         return 0;
     }
+
     return 1;
 }
 
+/*
+Funcao que realiza a soma para a multiplicacao dos numeros binarios, utilizada apenas em alguns casos
+dentro dos ciclos da multiplicacao.
+*/
 int somaMult(int *A, int *M){
     int x, y;
     int acumulador = 0;
@@ -286,6 +343,10 @@ int somaMult(int *A, int *M){
     return acumulador;
 }
 
+/*
+Funcao que desloca os numeros binarios para a direita, utilizada para realizar a multiplicacao,
+chamda em todos os ciclos, conforme o esquema da multiplicacao para sinal magnitude.
+*/
 int deslocarDireita(int C, int *A, int *Q){
     for(int i=(MAXLENGHT-2); i >= 0; i--){
         if(i == 0){
@@ -304,6 +365,10 @@ int deslocarDireita(int C, int *A, int *Q){
     return 0;
 }
 
+/*
+Função que analisa previamente as operação à serem realizadas com o numero, para que sua multiplicacao
+seja possivel, adequando valores do sinal e estruturas para execição dos ciclos da multiplicacao.
+*/
 int analisaNumMult(int dec1, int dec2, int *bin1, int *bin2){
     int signal = 0;
     int C = 0, A[MAXLENGHT-1],  Q[MAXLENGHT-1], M[MAXLENGHT-1], contador = 0;
@@ -341,11 +406,6 @@ int analisaNumMult(int dec1, int dec2, int *bin1, int *bin2){
         sum = FALSE;
         if(Q[MAXLENGHT-2] == 1){
             printf("\n-----[Ciclo %d | A = (A+M)]-----", contador+1);
-            // printf("\n(");
-            // printBinaryMult(A, MAXLENGHT-1);
-            // printf(" + ");
-            // printBinaryMult(M, MAXLENGHT-1);
-            // printf(") = ");
             C = somaMult(A, M);
             sum = TRUE;
         }
@@ -389,6 +449,10 @@ int analisaNumMult(int dec1, int dec2, int *bin1, int *bin2){
     printf("]\n------------------------------------\n");
 }
 
+/*
+Funcao que analiza os numeros para a subtracao, ajustando seu valor de sinal, e realizando
+decisoes sobre quais etapas serao realizadas para que o numero resultante seja correto.
+*/
 int analisaNumSub(int dec1, int dec2, int *bin1, int *bin2, int *bin3){
     if(bin1[0] == 0 && bin2[0] == 0){
         if(abs(dec1) == abs(dec2)){
@@ -459,6 +523,10 @@ int analisaNumSub(int dec1, int dec2, int *bin1, int *bin2, int *bin3){
     }
 }
 
+/*
+Funcao que analiza os numeros para a soma, ajustando seu valor de sinal, e realizando
+decisoes sobre quais etapas serao realizadas para que o numero resultante seja correto.
+*/
 int analisaNumSum(int dec1, int dec2, int *bin1, int *bin2, int *bin3){
     if(bin1[0] == 0 && bin2[0] == 0){
         bin3[0] = 0;
@@ -500,6 +568,8 @@ int analisaNumSum(int dec1, int dec2, int *bin1, int *bin2, int *bin3){
         return 0;
     }
 }
+
+//---------------------------- FUNÇÃO MAIN ---------------------------------------//
 void main(){
     int num1, num2;
     int bin1[MAXLENGHT], bin2[MAXLENGHT], bin3[MAXLENGHT];
@@ -562,3 +632,4 @@ void main(){
 
     printf("Finalizando Calculadora Sinal Magnitude...\n");
 }
+//----------------------------------------------------------------------------------//
