@@ -8,7 +8,7 @@ RA: 115.408
 #include <string.h>
 
 //---------------------------- CABEÇALHO ---------------------------------------//
-#define MAXLENGHT 16    // 16 bits para o numero, 1 bit para o '\0'
+#define MAXLENGHT 16    /*16 bits para o numero, 1 bit para o '\0'*/
 #define MAXNUM 32767    //2^15 - 1
 #define MINNUM -32767   //-(2^15 - 1)
 #define FALSE 0;
